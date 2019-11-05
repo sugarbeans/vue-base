@@ -22,7 +22,14 @@ const router = new Router({
     {
       path: "/cart",
       meta: {
-        title: "购物车"
+        title: "商品"
+      },
+      component: () => import("@/views/cart/index")
+    },
+    {
+      path: "/cart",
+      meta: {
+        title: "订单"
       },
       component: () => import("@/views/cart/index")
     },
