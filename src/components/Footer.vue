@@ -8,14 +8,14 @@
       </router-link>
     </li>
     <li class="item">
-      <router-link to="/cart" class="flex2 aic f20 text" active-class="active">
+      <router-link to="/order" class="flex2 aic f20 text" active-class="active">
         <van-icon class="text" name="shopping-cart-o"></van-icon>
         <p class="mt-5 text f12">订单</p>
       </router-link>
     </li>
     <li class="item">
       <router-link to="/cart" class="flex2 aic f20 text" active-class="active">
-        <van-icon class="text" name="shopping-cart-o"></van-icon>
+        <van-icon class="text" name="new-arrival-o"></van-icon>
         <p class="mt-5 text f12">商品</p>
       </router-link>
     </li>
@@ -25,12 +25,6 @@
         <p class="mt-5 text f12">我的</p>
       </router-link>
     </li>
-    <!-- <li class="item">
-      <router-link to="/demo" class="flex2 aic f20 text" active-class="active">
-        <van-icon class="text" name="user-o"></van-icon>
-        <p class="mt-5 text f12">例子</p>
-      </router-link>
-    </li>-->
   </ul>
 </template>
 
@@ -45,7 +39,6 @@ export default {};
   position: fixed;
   bottom: 0;
   width: 100%;
-  bottom: 0;
   .text {
     color: #797d82;
   }

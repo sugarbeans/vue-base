@@ -47,14 +47,14 @@ export default {
         if (error) {
           alert(error)
         } else {
-          this.$router.push('/')
+          this.$router.push('/index')
           // 修改登录状态
           // this.$store.commit("updateLogin", true);
           // // 把token存入store
           // this.$store.commit("updateToken", res.user.token);
           // // 把用户名存入store
-          // this.$store.commit("updateUsername", res.user.phone);
-          // this.$router.push("/my");
+          // this.$store.commit("updateUsername", englishName);
+          // this.$router.push("/index");
         }
       } catch (e) {
         throw e

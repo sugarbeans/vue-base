@@ -8,7 +8,7 @@ const router = new Router({
   routes: [
     {
       path: "/",
-      redirect: "/index"
+      redirect: "/login"
     },
     {
       path: "/index",
@@ -23,13 +23,6 @@ const router = new Router({
       path: "/cart",
       meta: {
         title: "商品"
-      },
-      component: () => import("@/views/cart/index")
-    },
-    {
-      path: "/cart",
-      meta: {
-        title: "订单"
       },
       component: () => import("@/views/cart/index")
     },
@@ -59,6 +52,48 @@ const router = new Router({
       component: () => import("@/views/login/index"),
       meta: {
         title: "登录"
+      }
+    },
+    {
+      path: "/orderConfirm",
+      component: () => import("@/views/order/orderConfirm"),
+      meta: {
+        title: "消费确认"
+      }
+    },
+    {
+      path: "/financeRecharge",
+      component: () => import("@/views/finance/recharge"),
+      meta: {
+        title: "账户充值"
+      }
+    },
+    {
+      path: "/financeExamine",
+      component: () => import("@/views/finance/examine"),
+      meta: {
+        title: "充值审核"
+      }
+    },
+    {
+      path: "/message",
+      component: () => import("@/views/system/message"),
+      meta: {
+        title: "重发短信"
+      }
+    },
+    {
+      path: "/orderNotice",
+      component: () => import("@/views/order/notice"),
+      meta: {
+        title: "订单通知"
+      }
+    },
+    {
+      path: "/order",
+      component: () => import("@/views/order"),
+      meta: {
+        title: "我的订单"
       }
     },
     {

@@ -1,15 +1,21 @@
 import Vue from "vue";
 import {
   Icon,
+  Tabbar,
+  TabbarItem,
   Tab,
   Tabs,
   List,
   Cell,
   Button,
   Popup,
+  Panel,
   Field,
+  Lazyload,
   Dialog,
   divider,
+  Grid,
+  GridItem,
   Toast,
   Swipe,
   SwipeItem,
@@ -17,7 +23,11 @@ import {
   NavBar,
   CellGroup,
   Image,
-  Sticky
+  Sticky,
+  DatetimePicker,
+  Picker,
+  Row,
+  Col
 } from "vant";
 
 Vue.use(Icon);
@@ -28,6 +38,7 @@ Vue.use(Cell);
 Vue.use(Button);
 Vue.use(Popup);
 Vue.use(Field);
+Vue.use(Lazyload);
 Vue.use(Dialog);
 Vue.use(divider);
 Vue.use(Toast);
@@ -38,3 +49,12 @@ Vue.use(NavBar);
 Vue.use(CellGroup);
 Vue.use(Image);
 Vue.use(Sticky);
+Vue.use(Grid);
+Vue.use(GridItem);
+Vue.use(Panel);
+Vue.use(Tabbar);
+Vue.use(TabbarItem);
+Vue.use(DatetimePicker);
+Vue.use(Picker);
+Vue.use(Row);
+Vue.use(Col)

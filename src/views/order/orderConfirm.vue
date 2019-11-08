@@ -1,36 +1,6 @@
-<template>
+﻿<template>
   <div class="oc-home">
-    <van-nav-bar title="我的订单" left-arrow @click-left="$router.go(-1)" />
-    <van-tabs v-model="active" class="tabs" :swipe-threshold="6" :animated="true" :line-width="53">
-      <div class="tab-header">
-        <van-tab title="全部">
-          <div class="content">
-            <div class="underline"></div>
-          </div>
-        </van-tab>
-        <van-tab title="未付款">
-          <div class="content">
-            <div class="underline"></div>
-          </div>
-
-        </van-tab>
-        <van-tab title="已取消">
-          <div class="content">
-            <div class="underline"></div>
-          </div>
-        </van-tab>
-        <van-tab title="待确认">
-          <div class="content">
-            <div class="underline"></div>
-          </div>
-        </van-tab>
-        <van-tab title="预订失败">
-          <div class="content">
-            <div class="underline"></div>
-          </div>
-        </van-tab>
-      </div>
-    </van-tabs>
+    <van-nav-bar title="消费确认" left-arrow @click-left="$router.go(-1)" />
     <van-cell-group>
       <!--<van-field @change="initPage" v-model="findType" center clearable label="订单号类型"  placeholder="请选择订单号类型"></van-field>-->
       <!--<van-field @change="initPage" v-model="findOrder" center clearable label="订单号"></van-field>-->
@@ -68,21 +38,21 @@
             </van-cell-group>
           </li>
           <!--<li class="filter-li">-->
-          <!--<div class="filter-date" @click="popUpCalendar('begin')">-->
-          <!--<span class="mr-30">开始日期</span>-->
-          <!--<span v-if="beginDate==0">无限制</span>-->
-          <!--<span v-else>{{$moment(beginDate).format('YYYY-MM-DD')}}</span>-->
-          <!--<span class="iconfont icon-rili fr"></span>-->
-          <!--</div>-->
+            <!--<div class="filter-date" @click="popUpCalendar('begin')">-->
+              <!--<span class="mr-30">开始日期</span>-->
+              <!--<span v-if="beginDate==0">无限制</span>-->
+              <!--<span v-else>{{$moment(beginDate).format('YYYY-MM-DD')}}</span>-->
+              <!--<span class="iconfont icon-rili fr"></span>-->
+            <!--</div>-->
 
           <!--</li>-->
           <!--<li class="filter-li">-->
-          <!--<div class="filter-date" @click="popUpCalendar('end')">-->
-          <!--<span class="mr-30">结束日期</span>-->
-          <!--<span v-if="endDate==0">无限制</span>-->
-          <!--<span v-else>{{$moment(endDate).format('YYYY-MM-DD')}}</span>-->
-          <!--<span class="iconfont icon-rili fr"></span>-->
-          <!--</div>-->
+            <!--<div class="filter-date" @click="popUpCalendar('end')">-->
+              <!--<span class="mr-30">结束日期</span>-->
+              <!--<span v-if="endDate==0">无限制</span>-->
+              <!--<span v-else>{{$moment(endDate).format('YYYY-MM-DD')}}</span>-->
+              <!--<span class="iconfont icon-rili fr"></span>-->
+            <!--</div>-->
           <!--</li>-->
         </ul>
         <div class="btn-box">
@@ -102,31 +72,29 @@
     </van-popup>
     <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="getData">
       <van-cell v-for="item in list" :key="item">
-        <div class="oc-item">
-          <div class="item-part">
-            <div class="wl">{{item.orderCode}}</div>
-            <div class="wl ta status">{{item.statusStr}}</div>
-            <div>{{item.distributorOrderCode}}</div>
-          </div>
-          <div class="item-part">
-            <div class="wl">{{item.distributor}}</div>
-            <div class="wl ta">{{$moment(item.verifDate).format('YYYY-MM-DD')}}</div>
-            <div>{{item.productName}}</div>
-          </div>
-          <div>{{item.person.name}}/{{item.person.phone}}/{{item.person.credentials}}</div>
-          <div class="item-part">
-            <div class="wl">{{item.totalMoney}}</div>
-            <div class="wl ta"><van-button slot="button" size="small" type="primary">确认</van-button></div>
-          </div>
+      <div class="oc-item">
+        <div class="item-part">
+          <div class="wl">{{item.orderCode}}</div>
+          <div class="wl ta status">{{item.statusStr}}</div>
+          <div>{{item.distributorOrderCode}}</div>
         </div>
+        <div class="item-part">
+          <div class="wl">{{item.distributor}}</div>
+          <div class="wl ta">{{$moment(item.verifDate).format('YYYY-MM-DD')}}</div>
+          <div>{{item.productName}}</div>
+        </div>
+        <div>{{item.person.name}}/{{item.person.phone}}/{{item.person.credentials}}</div>
+        <div class="item-part">
+          <div class="wl">{{item.totalMoney}}</div>
+          <div class="wl ta"><van-button slot="button" size="small" type="primary">确认</van-button></div>
+        </div>
+      </div>
       </van-cell>
     </van-list>
-    <Footer page="cart"></Footer>
   </div>
 </template>
 
 <script>
-  import Footer from "@/components/Footer";
   export default {
     data() {
       return {
@@ -157,9 +125,6 @@
         currentDate: new Date(),
         columns: ['全部', '畅游通', '分销商', '供应商']
       };
-    },
-    components: {
-      Footer
     },
     // mounted() {
     //   this.onLoad()
@@ -206,7 +171,7 @@
       },
 
       resetFilter() {
-        this.startDate = ''
+        this.beginDate = ''
         this.endDate = ''
         this.parameter = ''
         // 刷新日历组件
@@ -238,7 +203,7 @@
         //   page: this.page,
         //   limit: this.limit
         // }
-        // const _data = await this.$http.order(_params)
+        // const _data = await this.$http.listBySelective(_params)
         // this.totalPages = _data.data.data.pagination.totalPages
         // this.list = this.list.concat(_data.data.data.orderInfos)
         // console.log(this.list, 'this.list')
@@ -254,12 +219,12 @@
 </script>
 
 <style scoped>
-  .oc-item {
-    border: #999999 1px solid;
-    border-radius: 5px;
-    padding: 5px;
-    margin-bottom: 10px;
-  }
+.oc-item {
+  border: #999999 1px solid;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
   .item-part {
     display: flex;
     flex-wrap: wrap;
@@ -276,55 +241,55 @@
     color: #1989fa;
   }
 
-  .filter-pop {
-    position: fixed;
-    width: 80%;
-    height: 100%;
-    padding: .2rem .3rem;
-  }
+.filter-pop {
+  position: fixed;
+  width: 80%;
+  height: 100%;
+  padding: .2rem .3rem;
+}
 
-  .filter-title {
-    font-size: .5rem;
-    font-weight: 500;
-    line-height: .8rem;
-  }
+.filter-title {
+  font-size: .5rem;
+  font-weight: 500;
+  line-height: .8rem;
+}
 
-  .filter-date {
-    font-size: .3rem;
-    line-height: .5rem;
-    color: #999;
-    border-bottom: 1px solid #ebedf0;
-  }
+.filter-date {
+  font-size: .3rem;
+  line-height: .5rem;
+  color: #999;
+  border-bottom: 1px solid #ebedf0;
+}
 
-  .btn-box {
-    position: absolute;
-    width: 100%;
-    left: 0;
-    bottom: .15rem;
-    font-size: .3rem;
-  }
+.btn-box {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: .15rem;
+  font-size: .3rem;
+}
 
-  .btn-reset {
-    display: inline-block;
-    width: 47%;
-    height: .88rem;
-    line-height: .88rem;
-    color: #B0B2B6;
-    text-align: center;
-    border: 1px solid #B0B2B6;
-    border-radius: 0.5rem;
-    margin-left: 2%;
-  }
-  .btn-result {
-    color: #fff;
-    width: 47%;
-    height: .88rem;
-    margin-left: 2%;
-    line-height: .88rem;
-    text-align: center;
-    display: inline-block;
-    background-color: #07c160;
-    border-radius: 0.5rem;
-    border: 1px solid #07c160;
-  }
+.btn-reset {
+  display: inline-block;
+  width: 47%;
+  height: .88rem;
+  line-height: .88rem;
+  color: #B0B2B6;
+  text-align: center;
+  border: 1px solid #B0B2B6;
+  border-radius: 0.5rem;
+  margin-left: 2%;
+}
+.btn-result {
+  color: #fff;
+  width: 47%;
+  height: .88rem;
+  margin-left: 2%;
+  line-height: .88rem;
+  text-align: center;
+  display: inline-block;
+  background-color: #07c160;
+  border-radius: 0.5rem;
+  border: 1px solid #07c160;
+}
 </style>

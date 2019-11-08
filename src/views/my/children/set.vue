@@ -30,7 +30,7 @@ export default {
       this.$store.commit("updateUsername", "");
       // 清除token
       this.$store.commit("updateToken", "");
-      this.$router.push("/my");
+      this.$router.push("/login");
     }
   }
 };
