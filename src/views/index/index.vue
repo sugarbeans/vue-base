@@ -15,7 +15,7 @@
     <van-grid class="mt-15" :gutter="10" :column-num="3">
       <van-grid-item icon="sign" text="消费确认" @click.prevent="goto('/orderConfirm')" />
       <van-grid-item icon="balance-pay" text="账户充值" @click.prevent="goto('/financeRecharge')" />
-      <van-grid-item icon="after-sale" text="充值审核" @click.prevent="goto('/financeExamined')" />
+      <van-grid-item icon="after-sale" text="充值审核" @click.prevent="goto('/financeExamine')" />
       <van-grid-item icon="comment-circle-o" text="重发短信" @click.prevent="goto('/message')" />
       <van-grid-item icon="volume-o" text="订单通知" @click.prevent="goto('/orderNotice')" />
     </van-grid>

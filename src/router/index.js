@@ -69,6 +69,13 @@ const router = new Router({
       }
     },
     {
+      path: "/financeRecharge/detail",
+      component: () => import("@/views/finance/detail"),
+      meta: {
+        title: "充值流水"
+      }
+    },
+    {
       path: "/financeExamine",
       component: () => import("@/views/finance/examine"),
       meta: {

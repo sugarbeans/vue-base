@@ -37,23 +37,6 @@
               </van-field>
             </van-cell-group>
           </li>
-          <!--<li class="filter-li">-->
-            <!--<div class="filter-date" @click="popUpCalendar('begin')">-->
-              <!--<span class="mr-30">开始日期</span>-->
-              <!--<span v-if="beginDate==0">无限制</span>-->
-              <!--<span v-else>{{$moment(beginDate).format('YYYY-MM-DD')}}</span>-->
-              <!--<span class="iconfont icon-rili fr"></span>-->
-            <!--</div>-->
-
-          <!--</li>-->
-          <!--<li class="filter-li">-->
-            <!--<div class="filter-date" @click="popUpCalendar('end')">-->
-              <!--<span class="mr-30">结束日期</span>-->
-              <!--<span v-if="endDate==0">无限制</span>-->
-              <!--<span v-else>{{$moment(endDate).format('YYYY-MM-DD')}}</span>-->
-              <!--<span class="iconfont icon-rili fr"></span>-->
-            <!--</div>-->
-          <!--</li>-->
         </ul>
         <div class="btn-box">
           <div class="btn-reset" @click="resetFilter">重置所有</div>
@@ -71,11 +54,11 @@
       <van-picker :columns="columns" @change="onChange" />
     </van-popup>
     <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="getData">
-      <van-cell v-for="item in list" :key="item">
+      <van-cell v-for="(item, index) in list" :key="item">
       <div class="oc-item">
         <div class="item-part">
           <div class="wl">{{item.orderCode}}</div>
-          <div class="wl ta status">{{item.statusStr}}</div>
+          <div class="wl ta status">&nbsp;</div>
           <div>{{item.distributorOrderCode}}</div>
         </div>
         <div class="item-part">
@@ -85,12 +68,23 @@
         </div>
         <div>{{item.person.name}}/{{item.person.phone}}/{{item.person.credentials}}</div>
         <div class="item-part">
-          <div class="wl">{{item.totalMoney}}</div>
-          <div class="wl ta"><van-button slot="button" size="small" type="primary">确认</van-button></div>
+          <div class="wl">金额:&nbsp;{{item.totalMoney}}</div>
+          <div class="wl ta"><van-button @click="confirmOrder(index)" slot="button" size="small" type="primary">确认</van-button></div>
         </div>
       </div>
       </van-cell>
     </van-list>
+    <!--编辑短信-->
+    <van-dialog v-model="show" :title="消费确认" show-cancel-button @confirm="onConfirm" @cancel="hidePopup">
+      <van-cell-group>
+        <van-field disabled v-model="number" label="待确认数量" />
+        <van-field v-model="consumeNumber" label="消费数量" />
+      </van-cell-group>
+      <!--<div class="btn-box">-->
+      <!--<div class="btn-cancel" @click="hidePopup">取 消</div>-->
+      <!--<div class="btn-confirm" @click="onConfirm">确 定</div>-->
+      <!--</div>-->
+    </van-dialog>
   </div>
 </template>
 
@@ -123,7 +117,18 @@
         minDate: new Date(2016, 10, 1),
         maxDate: new Date(),
         currentDate: new Date(),
-        columns: ['全部', '畅游通', '分销商', '供应商']
+        columns: ['全部', '畅游通', '分销商', '供应商'],
+        show: false,
+
+        /**
+         * 消费确认参数
+         */
+        number: '', // 待确认数量
+        poilds: '',
+        orderCode: '',
+        consumeNumber: 0,
+        needVisitor: 0,
+        ids: ''
       };
     },
     // mounted() {
@@ -158,18 +163,6 @@
         this.calendarPopUp = false
       },
 
-      onSearch() {
-        if (this.beginDate > this.endDate) {
-          this.$toast('结束日期先与开始日期');
-          return false
-        }
-        this.finished = false
-        this.currentPage = 1
-        this.OrderList = []
-        this.onLoad()
-        this.filter = false
-      },
-
       resetFilter() {
         this.beginDate = ''
         this.endDate = ''
@@ -191,28 +184,34 @@
         this.filter = false
       },
       async getData() {
-        // let _params = {
-        //   findType: this.findType,
-        //   findOrder: this.findOrder,
-        //   name: this.name,
-        //   phone: this.phone,
-        //   queryType: 1,
-        //   startDate: '2019-10-01',
-        //   endDate: '2019-10-31',
-        //   orderStatus: -1,
-        //   page: this.page,
-        //   limit: this.limit
-        // }
-        // const _data = await this.$http.listBySelective(_params)
-        // this.totalPages = _data.data.data.pagination.totalPages
-        // this.list = this.list.concat(_data.data.data.orderInfos)
-        // console.log(this.list, 'this.list')
-        // this.loading = false;
-        // if (this.page >= this.totalPages) {
-        //   this.finished = true
-        // } else {
-        //   this.page += 1
-        // }
+        let _params = {
+          findType: this.findType,
+          findOrder: this.findOrder,
+          name: this.name,
+          phone: this.phone,
+          queryType: 1,
+          startDate: '2019-10-01',
+          endDate: '2019-10-31',
+          orderStatus: -1,
+          page: this.page,
+          limit: this.limit
+        }
+        const _data = await this.$http.listBySelective(_params)
+        this.totalPages = _data.data.data.pagination.totalPages
+        this.list = this.list.concat(_data.data.data.orderInfos)
+        this.loading = false;
+        if (this.page >= this.totalPages) {
+          this.finished = true
+        } else {
+          this.page += 1
+        }
+      },
+      confirmOrder(index) {
+        const _str = this.list[index].id
+        this.$http.utilGetOrder(_str).then(res => {
+          console.log(_str)
+        })
+
       }
     }
   };

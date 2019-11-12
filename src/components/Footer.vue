@@ -13,12 +13,12 @@
         <p class="mt-5 text f12">订单</p>
       </router-link>
     </li>
-    <li class="item">
-      <router-link to="/cart" class="flex2 aic f20 text" active-class="active">
-        <van-icon class="text" name="new-arrival-o"></van-icon>
-        <p class="mt-5 text f12">商品</p>
-      </router-link>
-    </li>
+    <!--<li class="item">-->
+      <!--<router-link to="/cart" class="flex2 aic f20 text" active-class="active">-->
+        <!--<van-icon class="text" name="new-arrival-o"></van-icon>-->
+        <!--<p class="mt-5 text f12">商品</p>-->
+      <!--</router-link>-->
+    <!--</li>-->
     <li class="item">
       <router-link to="/my" class="flex2 aic f20 text" active-class="active">
         <van-icon class="text" name="user-o"></van-icon>

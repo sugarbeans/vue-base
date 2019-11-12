@@ -17,7 +17,7 @@
       </van-field>
     </van-cell-group>
     <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="getData">
-      <van-cell v-for="item in list" :key="item">
+      <van-cell v-for="(item, index) in list" :key="item">
         <div class="oc-item">
           <div class="item-part">
             <div class="wls">{{item.smsGateway}}</div>
@@ -26,13 +26,13 @@
           </div>
           <div class="message">{{item.message}}</div>
           <div class="item-part">
-            <div class="wl">发送状态:{{item.sendStatus}}</div>
-            <div class="wl ta status"><van-button slot="button" size="small" type="primary">重发短信</van-button></div>
-            <div class="wl">发送次数:{{item.sendCount}}</div>
-            <div class="wl ta status"><van-button slot="button" size="small" type="primary">修改短信</van-button></div>
-            <div class="wl">通知状态:{{item.notifyStatus}}</div>
-            <div class="wl ta status"><van-button slot="button" size="small" type="primary">重置次数</van-button></div>
-            <div class="wl">通知次数:{{item.notifyCount}}</div>
+            <div class="wl">发送状态:&nbsp;{{item.sendStatus}}</div>
+            <div class="wl ta status"><van-button slot="button" @click="repeatSendMsg(index)" size="small" type="primary">重发短信</van-button></div>
+            <div class="wl">发送次数:&nbsp;{{item.sendCount}}</div>
+            <div class="wl ta status"><van-button slot="button" @click="editMsg(index)" size="small" type="primary">修改短信</van-button></div>
+            <div class="wl">通知状态:&nbsp;{{item.notifyStatus}}</div>
+            <div class="wl ta status"><van-button slot="button" @click="resetCount(index)" size="small" type="primary">重置次数</van-button></div>
+            <div class="wl">通知次数:&nbsp;{{item.notifyCount}}</div>
           </div>
         </div>
       </van-cell>
@@ -41,6 +41,17 @@
     <van-popup v-model="calendarPopUp" position="bottom">
       <van-datetime-picker @confirm="calendarChange" v-model="currentDate" type="date" :min-date="minDate" />
     </van-popup>
+    <!--编辑短信-->
+    <van-dialog v-model="show" :title="编辑短信内容" show-cancel-button @confirm="onConfirm" @cancel="hidePopup">
+      <van-cell-group>
+        <van-field v-model="editPhone" label="电话号码" />
+        <van-field v-model="editMessage" rows="1" autosize label="短信内容" type="textarea"/>
+      </van-cell-group>
+      <!--<div class="btn-box">-->
+      <!--<div class="btn-cancel" @click="hidePopup">取 消</div>-->
+      <!--<div class="btn-confirm" @click="onConfirm">确 定</div>-->
+      <!--</div>-->
+    </van-dialog>
   </div>
 </template>
 
@@ -67,6 +78,11 @@
         minDate: new Date(2016, 10, 1),
         maxDate: new Date(),
         currentDate: new Date(),
+
+        show: false,
+        editPhone: '',
+        editMessage: '',
+        obj: {}
       };
     },
     // mounted() {
@@ -93,26 +109,63 @@
         this.calendarPopUp = false
       },
       async getData() {
-        // let _params = {
-        //   phone: this.phone,
-        //   orderCode: this.orderCode,
-        //   startDate: this.startDate,
-        //   endDate: this.endDate,
-        //   page: 1,
-        //   limit: this.limit
-        // }
-        // const _data = await this.$http.sms(_params)
-        // this.totalPages = _data.data.data.pagination.totalPages
-        // this.list = this.list.concat(_data.data.data.smses)
-        this.list = ['1']
-        console.log(this.list, 'this.list')
+        let _params = {
+          phone: this.phone,
+          orderCode: this.orderCode,
+          // startDate: this.startDate,
+          startDate: '2019-10-10',
+          endDate: this.endDate,
+          page: 1,
+          limit: this.limit
+        }
+        const _data = await this.$http.sms(_params)
+        this.totalPages = _data.data.data.pagination.totalPages
+        this.list = this.list.concat(_data.data.data.smses)
         this.loading = false;
         if (this.page >= this.totalPages) {
           this.finished = true
         } else {
           this.page += 1
         }
-      }
+      },
+      repeatSendMsg(index) {
+        this.$dialog.confirm({
+          title: '重发短信',
+          message: '你确定重发短信，是否继续？'
+        }).then(() => {
+          // on confirm
+        }).catch(() => {
+          // on cancel
+        });
+      },
+      editMsg(index) {
+        this.show = true
+        this.editPhone =  this.list[index].phone
+        this.editMessage = this.list[index].message
+        this.obj = this.list[index]
+      },
+      hidePopup() {
+        this.show = false
+      },
+      onConfirm() {
+        let _obj = {
+          smsGatewayId: this.obj.smsGatewayId,
+          id: this.obj.id,
+          orderId: this.obj.orderId,
+          phone: this.editPhone,
+          message: this.editMessage
+        }
+      },
+      resetCount(index) {
+        this.$dialog.confirm({
+          title: '重置次数',
+          message: '你确定重置短信次数，是否继续？'
+        }).then(() => {
+          // on confirm
+        }).catch(() => {
+          // on cancel
+        });
+      },
     }
   };
 </script>

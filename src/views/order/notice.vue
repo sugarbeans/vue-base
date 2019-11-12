@@ -1,35 +1,8 @@
 <template>
 <div class="oc-home">
   <van-nav-bar title="订单通知" left-arrow @click-left="$router.go(-1)" />
-  <van-tabs v-model="active" class="tabs" :swipe-threshold="6" :animated="true" :line-width="53">
-    <div class="tab-header">
-      <van-tab title="消费">
-        <div class="content">
-          <div class="underline"></div>
-        </div>
-      </van-tab>
-      <van-tab title="退订">
-        <div class="content">
-          <div class="underline"></div>
-        </div>
-
-      </van-tab>
-      <van-tab title="出票">
-        <div class="content">
-          <div class="underline"></div>
-        </div>
-      </van-tab>
-      <van-tab title="预订">
-        <div class="content">
-          <div class="underline"></div>
-        </div>
-      </van-tab>
-      <van-tab title="修改">
-        <div class="content">
-          <div class="underline"></div>
-        </div>
-      </van-tab>
-    </div>
+  <van-tabs v-model="active" @click="changeTab" class="tabs" :swipe-threshold="6" :animated="true" :line-width="60">
+    <van-tab v-for="item in notifyTypeStr" :title="item" />
   </van-tabs>
 
   <van-cell-group>
@@ -68,23 +41,6 @@
             </van-field>
           </van-cell-group>
         </li>
-        <!--<li class="filter-li">-->
-        <!--<div class="filter-date" @click="popUpCalendar('begin')">-->
-        <!--<span class="mr-30">开始日期</span>-->
-        <!--<span v-if="beginDate==0">无限制</span>-->
-        <!--<span v-else>{{$moment(beginDate).format('YYYY-MM-DD')}}</span>-->
-        <!--<span class="iconfont icon-rili fr"></span>-->
-        <!--</div>-->
-
-        <!--</li>-->
-        <!--<li class="filter-li">-->
-        <!--<div class="filter-date" @click="popUpCalendar('end')">-->
-        <!--<span class="mr-30">结束日期</span>-->
-        <!--<span v-if="endDate==0">无限制</span>-->
-        <!--<span v-else>{{$moment(endDate).format('YYYY-MM-DD')}}</span>-->
-        <!--<span class="iconfont icon-rili fr"></span>-->
-        <!--</div>-->
-        <!--</li>-->
       </ul>
       <div class="btn-box">
         <div class="btn-reset" @click="resetFilter">重置所有</div>
@@ -106,18 +62,24 @@
       <div class="oc-item">
         <div class="item-part">
           <div class="wl">{{item.orderCode}}</div>
-          <div class="wl ta status">{{item.statusStr}}</div>
+          <div class="wl ta status">{{item.orderStatusStr}}</div>
           <div>{{item.distributorOrderCode}}</div>
         </div>
         <div class="item-part">
-          <div class="wl">{{item.distributor}}</div>
-          <div class="wl ta">{{$moment(item.verifDate).format('YYYY-MM-DD')}}</div>
-          <div>{{item.productName}}</div>
+          <div class="wl">{{item.distributorName}}</div>
+          <div class="wl ta">{{$moment(item.updateTime).format('YYYY-MM-DD')}}</div>
+          <div class="wl">{{item.supplierName}}</div>
+          <div class="wl ta">{{item.productName}}</div>
         </div>
-        <div>{{item.person.name}}/{{item.person.phone}}/{{item.person.credentials}}</div>
         <div class="item-part">
-          <div class="wl">{{item.totalMoney}}</div>
-          <div class="wl ta"><van-button slot="button" size="small" type="primary">确认</van-button></div>
+          <div class="wl">已消费:&nbsp;{{item.operateQuantity}}</div>
+          <div class="wl ta">总数量:&nbsp;{{item.totalQuantity}}</div>
+          <div class="wl">通知状态:&nbsp;{{item.statusStr}}</div>
+          <div class="wl ta">已通知&nbsp;{{item.notifyCount}}&nbsp;次</div>
+        </div>
+        <div class="item-part">
+          <div class="wl">{{item.operateTypeStr}}</div>
+          <div class="wl ta"><van-button slot="button" size="small" type="primary">操作</van-button></div>
         </div>
       </div>
     </van-cell>
@@ -129,6 +91,9 @@
   export default {
     data() {
       return {
+        active: 0,
+        notifyType: '0',
+        notifyTypeStr: ['消费', '退订', '出票', '预订', '修改'],
         findType: '',
         findTypeStr: '',
         findOrder: '',
@@ -161,6 +126,10 @@
     //   this.onLoad()
     // },
     methods: {
+      changeTab() {
+        let _arr=[0, 1, 4, 5, 6]
+        this.notifyType = _arr[this.active]
+      },
       onChange(picker, value, index) {
         this.findType = index ? index-1 : ''
         this.findTypeStr = value
@@ -222,28 +191,30 @@
         this.filter = false
       },
       async getData() {
-        // let _params = {
-        //   findType: this.findType,
-        //   findOrder: this.findOrder,
-        //   name: this.name,
-        //   phone: this.phone,
-        //   queryType: 1,
-        //   startDate: '2019-10-01',
-        //   endDate: '2019-10-31',
-        //   orderStatus: -1,
-        //   page: this.page,
-        //   limit: this.limit
-        // }
-        // const _data = await this.$http.listBySelective(_params)
-        // this.totalPages = _data.data.data.pagination.totalPages
-        // this.list = this.list.concat(_data.data.data.orderInfos)
-        // console.log(this.list, 'this.list')
-        // this.loading = false;
-        // if (this.page >= this.totalPages) {
-        //   this.finished = true
-        // } else {
-        //   this.page += 1
-        // }
+        let _params = {
+          dateQueryType: 1,
+          findType: this.findType,
+          findOrder: this.findOrder,
+          name: this.name,
+          notifyType: this.notifyType,
+          phone: this.phone,
+          queryType: 1,
+          startDate: '2019-10-01',
+          endDate: '2019-10-31',
+          status: -1,
+          page: this.page,
+          limit: this.limit
+        }
+        const _data = await this.$http.orderNotify(_params)
+        this.totalPages = _data.data.data.pagination.totalPages
+        this.list = this.list.concat(_data.data.data.orderNotify)
+        console.log(this.list, 'this.list')
+        this.loading = false;
+        if (this.page >= this.totalPages) {
+          this.finished = true
+        } else {
+          this.page += 1
+        }
       }
     }
   };

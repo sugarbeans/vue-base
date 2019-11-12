@@ -1,35 +1,8 @@
 <template>
   <div class="oc-home">
     <van-nav-bar title="我的订单" left-arrow @click-left="$router.go(-1)" />
-    <van-tabs v-model="active" class="tabs" :swipe-threshold="6" :animated="true" :line-width="53">
-      <div class="tab-header">
-        <van-tab title="全部">
-          <div class="content">
-            <div class="underline"></div>
-          </div>
-        </van-tab>
-        <van-tab title="未付款">
-          <div class="content">
-            <div class="underline"></div>
-          </div>
-
-        </van-tab>
-        <van-tab title="已取消">
-          <div class="content">
-            <div class="underline"></div>
-          </div>
-        </van-tab>
-        <van-tab title="待确认">
-          <div class="content">
-            <div class="underline"></div>
-          </div>
-        </van-tab>
-        <van-tab title="预订失败">
-          <div class="content">
-            <div class="underline"></div>
-          </div>
-        </van-tab>
-      </div>
+    <van-tabs v-model="active" @click="changeTab" class="tabs" :ellipsis="false" :swipe-threshold="5" :animated="true" :line-width="60">
+      <van-tab v-for="item in tabs" :title="item" />
     </van-tabs>
     <van-cell-group>
       <!--<van-field @change="initPage" v-model="findType" center clearable label="订单号类型"  placeholder="请选择订单号类型"></van-field>-->
@@ -41,6 +14,7 @@
         <van-button style="margin-left: 20px;" @click="filter=true" slot="button" size="small" type="default">更多</van-button>
       </van-field>
     </van-cell-group>
+
     <van-popup v-model="filter" position="right" class="filter-pop">
       <div>
         <div class="filter-title">查询条件</div>
@@ -67,23 +41,6 @@
               </van-field>
             </van-cell-group>
           </li>
-          <!--<li class="filter-li">-->
-          <!--<div class="filter-date" @click="popUpCalendar('begin')">-->
-          <!--<span class="mr-30">开始日期</span>-->
-          <!--<span v-if="beginDate==0">无限制</span>-->
-          <!--<span v-else>{{$moment(beginDate).format('YYYY-MM-DD')}}</span>-->
-          <!--<span class="iconfont icon-rili fr"></span>-->
-          <!--</div>-->
-
-          <!--</li>-->
-          <!--<li class="filter-li">-->
-          <!--<div class="filter-date" @click="popUpCalendar('end')">-->
-          <!--<span class="mr-30">结束日期</span>-->
-          <!--<span v-if="endDate==0">无限制</span>-->
-          <!--<span v-else>{{$moment(endDate).format('YYYY-MM-DD')}}</span>-->
-          <!--<span class="iconfont icon-rili fr"></span>-->
-          <!--</div>-->
-          <!--</li>-->
         </ul>
         <div class="btn-box">
           <div class="btn-reset" @click="resetFilter">重置所有</div>
@@ -109,14 +66,23 @@
             <div>{{item.distributorOrderCode}}</div>
           </div>
           <div class="item-part">
-            <div class="wl">{{item.distributor}}</div>
-            <div class="wl ta">{{$moment(item.verifDate).format('YYYY-MM-DD')}}</div>
-            <div>{{item.productName}}</div>
+            <div class="wl">{{item.distributorName}}</div>
+            <div class="wl ta">{{item.createDate}}</div>
+            <div class="wl">{{item.supplierName}}</div>
+            <div class="wl ta">{{item.productName}}</div>
           </div>
-          <div>{{item.person.name}}/{{item.person.phone}}/{{item.person.credentials}}</div>
+          <div>{{item.contactPhone}}/{{item.credentials}}</div>
           <div class="item-part">
-            <div class="wl">{{item.totalMoney}}</div>
-            <div class="wl ta"><van-button slot="button" size="small" type="primary">确认</van-button></div>
+            <div class="wl">数量:&nbsp;{{item.totalQuantity}}</div>
+            <div class="wl tb">消费数量:&nbsp;{{item.consumeQuantity}}</div>
+            <div class="wl">退订数量:&nbsp;{{item.refundQuantity}}</div>
+            <div class="wl ta"><van-button slot="button" @click="refundOrder(item.orderCodeEncrypt)" size="small" type="primary">退订</van-button></div>
+          </div>
+          <div class="item-part">
+            <div class="wl">单价:&nbsp;{{item.price}}</div>
+            <div class="wl tb">金额:&nbsp;{{item.totalMoney}}</div>
+            <div class="wl">{{item.paymentFundTypeStr}}</div>
+            <div class="wl ta"><van-button slot="button" size="small" @click="updateOrder(item.orderCodeEncrypt)" type="primary">改签</van-button></div>
           </div>
         </div>
       </van-cell>
@@ -130,6 +96,9 @@
   export default {
     data() {
       return {
+        tabs: ['全部', '未付款', '已取消', '待确认', '预订失败', '预订成功', '已消费', '已退款', '消费待确认', '退订待确认', '订单待确认', '订单过期', '订单异常', '退订待审'],
+        active: 0,
+        orderStatus: '-1',
         findType: '',
         findTypeStr: '',
         findOrder: '',
@@ -165,6 +134,9 @@
     //   this.onLoad()
     // },
     methods: {
+      changeTab() {
+        console.log(this.active, 'this.active')
+      },
       onChange(picker, value, index) {
         this.findType = index ? index-1 : ''
         this.findTypeStr = value
@@ -226,28 +198,28 @@
         this.filter = false
       },
       async getData() {
-        // let _params = {
-        //   findType: this.findType,
-        //   findOrder: this.findOrder,
-        //   name: this.name,
-        //   phone: this.phone,
-        //   queryType: 1,
-        //   startDate: '2019-10-01',
-        //   endDate: '2019-10-31',
-        //   orderStatus: -1,
-        //   page: this.page,
-        //   limit: this.limit
-        // }
-        // const _data = await this.$http.order(_params)
-        // this.totalPages = _data.data.data.pagination.totalPages
-        // this.list = this.list.concat(_data.data.data.orderInfos)
-        // console.log(this.list, 'this.list')
-        // this.loading = false;
-        // if (this.page >= this.totalPages) {
-        //   this.finished = true
-        // } else {
-        //   this.page += 1
-        // }
+        let _params = {
+          dateQueryType: 1,
+          findType: this.findType,
+          findOrder: this.findOrder,
+          orderStatus: this.active-1,
+          name: this.name,
+          phone: this.phone,
+          startDate: '2019-10-01',
+          endDate: '2019-10-31',
+          page: this.page,
+          limit: this.limit
+        }
+        const _data = await this.$http.orderList(_params)
+        this.totalPages = _data.data.data.pagination.totalPages
+        this.list = this.list.concat(_data.data.data.alreadyPurchasees)
+        console.log(this.list, 'this.list')
+        this.loading = false;
+        if (this.page >= this.totalPages) {
+          this.finished = true
+        } else {
+          this.page += 1
+        }
       }
     }
   };
@@ -269,6 +241,9 @@
   }
   .ta {
     text-align: right;
+  }
+  .tb {
+    text-align: left;
   }
   .status {
     width: 100px;

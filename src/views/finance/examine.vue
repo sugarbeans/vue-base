@@ -13,18 +13,18 @@
         <div class="oc-item">
           <div class="item-part">
             <div class="wl">{{item.distributorName}}</div>
-            <div class="wl ta status">{{item.supplierName}}</div>
-            <div>审核通过{{item.status}}</div>
+            <div class="wl ta status">充值成功{{item.status}}</div>
+            <div class="wl">{{item.supplierName}}</div>
           </div>
           <div class="item-part">
             <div class="wl">{{item.applicantName}}</div>
-            <div class="wl ta status">充值{{item.operateType}}</div>
-            <div>{{item.checkName}}</div>
+            <div class="wl ta">充值{{item.operateType}}</div>
+            <div class="wl">{{item.checkName}}</div>
+            <div class="wl ta">{{$moment(item.updateTime).format('YYYY-MM-DD')}}</div>
           </div>
           <div class="item-part">
             <div class="wl">{{item.money}}</div>
-            <div class="wl ta"><van-button slot="button" size="small" type="primary">确认</van-button></div>
-            <div>{{item.updateTime}}</div>
+            <div class="wl ta"><van-button slot="button" size="small" type="primary">审核</van-button></div>
           </div>
         </div>
       </van-cell>
@@ -51,16 +51,16 @@
         finished: false,
 
         poCountId: false,
-        columnsId: []
+        columnsId: [{defaultIndex: '', text: ''}]
       };
     },
-    // mounted() {
-    //   this.onLoad()
-    // },
+    mounted() {
+      this.getListFxs()
+    },
     methods: {
       onChange(picker, value, index) {
-        this.distributorId = index
-        this.distributorIdStr = value
+        this.distributorId = value.defaultIndex
+        this.distributorIdStr = value.text
         this.poCountId = false
       },
       popUpCountId() {
@@ -70,41 +70,41 @@
 
       },
       async getData() {
-        // let _params = {
-        //   type: 'Distributor',
-        //   name: this.name,
-        //   isAdmin: false,
-        //   page: 1
-        //   limit: this.limit
-        // }
-        // const _data = await this.$http.accountExamineList(_params)
-        // this.totalPages = _data.data.data.pagination.totalPages
-        // this.columnsId = _data.
-        // this.list = this.list.concat(_data.data.data.list)
-
-        // console.log(this.list, 'this.list')
-        // this.loading = false;
-        // if (this.page >= this.totalPages) {
-        //   this.finished = true
-        // } else {
-        //   this.page += 1
-        //}
+        let _params = {
+          type: 'Distributor',
+          name: this.name,
+          isAdmin: false,
+          page: 1,
+          limit: this.limit
+        }
+        const _data = await this.$http.accountExamineList(_params)
+        this.totalPages = _data.data.data.pagination.totalPages
+        this.list = this.list.concat(_data.data.data.list)
+        this.loading = false;
+        if (this.page >= this.totalPages) {
+          this.finished = true
+        } else {
+          this.page += 1
+        }
       },
 
       getListFxs() {
+        let _this = this
         let _params = {
           type: 'Distributor',
           name: '',
           isAdmin: false
         }
-        const _data = this.$http.getListFxs(_params)
-        const _array = _data.data.data.list
-        for(let i=0; i<_array.length; i++) {
-           let _obj = {
-             defaultIndex: _array[i].distributorId, values: _array[i].chinesename
-        }
-         this.columnsId.push(_obj)
-        }
+        this.$http.getListFxs(_params).then(function (res){
+          const _array = res.data.data.list
+          for(let i=0; i<_array.length; i++) {
+             let _obj = {
+               defaultIndex: _array[i].distributorId, text: _array[i].chinesename
+          }
+            _this.columnsId.push(_obj)
+          }
+        })
+
       }
     }
   };
